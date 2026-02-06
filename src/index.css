@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+@theme {
+  --color-base: var(--base);
+  --color-surface: var(--surface);
+  --color-overlay: var(--overlay);
+  
+  --color-text: var(--text);
+  --color-subtle: var(--subtle);
+  --color-muted: var(--muted);
+  
+  --color-iris: var(--iris);
+  --color-pine: var(--pine);
+  --color-foam: var(--foam);
+  --color-gold: var(--gold);
+  --color-love: var(--love);
+  --color-rose: var(--rose);
+}
+
+:root {
+  /* Light Theme */
+  --base: #faf4ed;
+  --surface: #fffaf3;
+  --overlay: #f2e9e1;
+  
+  --text: #575279;
+  --subtle: #797593;
+  --muted: #9893a5;
+  
+  --iris: #907aa9;
+  --pine: #286983;
+  --foam: #56949f;
+  --gold: #ea9d34;
+  --love: #b4637a;
+  --rose: #d7827e;
+}
+
+.dark {
+  /* Dark Theme */
+  --base: #191724;
+  --surface: #1f1d2e;
+  --overlay: #26233a;
+  
+  --text: #e0def4;
+  --subtle: #9090a0;
+  --muted: #6e6a86;
+  
+  --iris: #c4a7e7;
+  --pine: #31748f;
+  --foam: #9ccfd8;
+  --gold: #f6c177;
+  --love: #eb6f92;
+  --rose: #ebbcba;
+}
