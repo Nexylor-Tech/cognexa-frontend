@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { env } from '../lib';
 import { ThemeToggle } from '../components/ThemeToggle';
+import { JoinWaitlistForm } from '../components/JoinWaitlistForm';
+
 const IMAGE_URL = `${env.API_URL}/public`
 import {
   CheckCircle,
@@ -13,13 +15,13 @@ import {
   ArrowRight
 } from 'lucide-react';
 
-interface LandingProps {
-  onSignInClick: () => void;
-}
+export const Landing: React.FC = () => {
+  const [showWaitlist, setShowWaitlist] = useState(false);
 
-export const Landing: React.FC<LandingProps> = ({ onSignInClick }) => {
   return (
     <div className="min-h-screen bg-base text-text font-sans overflow-x-hidden">
+      {showWaitlist && <JoinWaitlistForm onClose={() => setShowWaitlist(false)} />}
+      
       {/* Background Pattern */}
       <div
         className="fixed inset-0 pointer-events-none z-0 opacity-[0.15]"
@@ -46,16 +48,10 @@ export const Landing: React.FC<LandingProps> = ({ onSignInClick }) => {
         <div className="flex items-center gap-4">
           <ThemeToggle />
           <button
-            onClick={onSignInClick}
-            className="text-sm font-semibold text-text hover:text-pine transition-colors hidden sm:block"
-          >
-            Sign in
-          </button>
-          <button
-            onClick={onSignInClick}
+            onClick={() => setShowWaitlist(true)}
             className="text-sm font-semibold bg-surface border border-overlay px-4 py-2 rounded-lg hover:bg-overlay transition-colors shadow-sm text-text"
           >
-            Get demo
+            Join the Waitlist
           </button>
         </div>
       </nav>
@@ -80,13 +76,12 @@ export const Landing: React.FC<LandingProps> = ({ onSignInClick }) => {
             </p>
             <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
               <button
-                onClick={onSignInClick}
+                onClick={() => setShowWaitlist(true)}
                 className="px-8 py-4 bg-pine text-surface text-lg font-semibold rounded-lg hover:bg-pine/90 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
               >
-                Get free demo
+                Join the Waitlist
               </button>
               <button
-                onClick={onSignInClick}
                 className="px-8 py-4 bg-surface border border-overlay text-text text-lg font-semibold rounded-lg hover:bg-overlay transition-colors"
               >
                 View documentation
@@ -285,10 +280,10 @@ export const Landing: React.FC<LandingProps> = ({ onSignInClick }) => {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button
-              onClick={onSignInClick}
+              onClick={() => setShowWaitlist(true)}
               className="px-8 py-4 bg-pine text-surface text-lg font-semibold rounded-lg hover:bg-pine/90 transition-all shadow-lg w-full sm:w-auto"
             >
-              Get Started for Free
+              Join the Waitlist
             </button>
             <button className="px-8 py-4 bg-transparent border border-overlay text-text text-lg font-semibold rounded-lg hover:bg-surface transition-colors w-full sm:w-auto flex items-center justify-center gap-2">
               Talk to Sales <ArrowRight size={18} />
