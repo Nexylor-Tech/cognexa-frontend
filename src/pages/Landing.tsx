@@ -51,12 +51,6 @@ export const Landing: React.FC<LandingProps> = ({ onSignInClick }) => {
           >
             Sign in
           </button>
-          <button
-            onClick={onSignInClick}
-            className="text-sm font-semibold bg-surface border border-overlay px-4 py-2 rounded-lg hover:bg-overlay transition-colors shadow-sm text-text"
-          >
-            Get demo
-          </button>
         </div>
       </nav>
 
@@ -83,7 +77,7 @@ export const Landing: React.FC<LandingProps> = ({ onSignInClick }) => {
                 onClick={onSignInClick}
                 className="px-8 py-4 bg-pine text-surface text-lg font-semibold rounded-lg hover:bg-pine/90 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
               >
-                Get free demo
+                Get started
               </button>
               <button
                 onClick={onSignInClick}
@@ -301,11 +295,11 @@ export const Landing: React.FC<LandingProps> = ({ onSignInClick }) => {
       <footer className="bg-surface border-t border-overlay py-12 px-6 relative z-10">
         <div className="max-w-7xl mx-auto grid md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-1">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-6 h-6 bg-pine rounded flex items-center justify-center text-surface font-bold text-xs">C</div>
-              <span className="font-bold text-text">Cognexa</span>
+            <div className="flex items-center gap-2">
+              <img src={`${IMAGE_URL}/cognexa.png`} alt="Cognexa" className="w-5 h-5 rounded-lg object-contain" />
+              <span className="text-md font-bold tracking-tight text-text">Cognexa</span>
             </div>
-            <p className="text-xs text-subtle">© 2024 Cognexa Inc.</p>
+            <p className="text-xs text-subtle">© 2026 Cognexa Inc.</p>
           </div>
           <div>
             <h4 className="font-bold text-text mb-4">Product</h4>

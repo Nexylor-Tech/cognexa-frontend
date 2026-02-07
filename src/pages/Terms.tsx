@@ -1,11 +1,14 @@
 import { ThemeToggle } from '../components/ThemeToggle';
+import { env } from '../lib';
+
+const IMAGE_URL = `${env.API_URL}/public`;
 
 export const Terms = () => {
   return (
     <div className="min-h-screen bg-base text-text font-sans">
       <nav className="relative z-10 w-full max-w-7xl mx-auto px-6 h-20 flex items-center justify-between border-b border-overlay">
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.location.hash = ''}>
-          <div className="w-8 h-8 bg-pine rounded-lg flex items-center justify-center text-surface font-bold">C</div>
+          <img src={`${IMAGE_URL}/cognexa.png`} alt="Cognexa" className="w-8 h-8 rounded-lg object-contain" />
           <span className="text-xl font-bold tracking-tight text-text">Cognexa</span>
         </div>
         <ThemeToggle />
