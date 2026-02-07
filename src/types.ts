@@ -2,15 +2,15 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  image?: string;
+  image?: string | null;
   emailVerified: boolean;
 }
 
 export interface Session {
   id: string;
-  expiresAt: string;
-  ipAddress?: string;
-  userAgent?: string;
+  expiresAt: Date;
+  ipAddress?: string | null;
+  userAgent?: string | null;
   userId: string;
 }
 
@@ -18,9 +18,9 @@ export interface Organization {
   id: string;
   name: string;
   slug?: string;
-  logo?: string;
-  metadata?: string;
-  createdAt: string;
+  logo?: string | null;
+  metadata?: any;
+  createdAt: Date;
 }
 
 export interface Project {
@@ -29,8 +29,8 @@ export interface Project {
   description?: string;
   organizationId: string;
   ownerId?: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface Task {
@@ -40,8 +40,8 @@ export interface Task {
   title: string;
   priority: 'low' | 'medium' | 'high';
   status: 'todo' | 'in_progress' | 'done';
-  deadline?: string;
-  createdAt: string;
+  deadline?: Date;
+  createdAt: Date;
 }
 
 export interface AuthContextType {

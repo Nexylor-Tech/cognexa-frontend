@@ -1,4 +1,4 @@
-import type { User, Session, Organization, Project, Task } from '../types';
+import type { Organization, Project, Task } from '../types';
 import { authClient } from '../lib/auth-client';
 import { env } from '../lib/'
 
@@ -27,7 +27,7 @@ async function fetchClient<T>(endpoint: string, options: RequestInit = {}): Prom
   }
 
   const text = await response.text();
-  return text ? JSON.parse(text) : {};
+  return text ? JSON.parse(text) : {} as T;
 }
 
 export const authApi = {

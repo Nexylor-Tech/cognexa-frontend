@@ -10,7 +10,7 @@ import type { User, Session } from './types';
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+  const [, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Hash-based routing state
