@@ -2,7 +2,7 @@ import type { Organization, Project, Task } from '../types';
 import { authClient } from '../lib/auth-client';
 import { env } from '../lib/'
 
-const API_URL = `${env.API_URL}/api`
+const API_URL = `${env.API_URL}/api`;
 // Helper to handle fetch with credentials for non-better-auth endpoints (Data API)
 async function fetchClient<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const response = await fetch(endpoint, {
