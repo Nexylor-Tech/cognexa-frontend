@@ -23,6 +23,15 @@ export interface Organization {
   createdAt: Date;
 }
 
+export interface ProjectMember {
+  id: string;
+  projectId: string;
+  userId: string;
+  role: 'admin' | 'editor' | 'viewer';
+  joinedAt: Date;
+  user: User;
+}
+
 export interface Project {
   id: string;
   name: string;
@@ -31,6 +40,7 @@ export interface Project {
   ownerId?: string;
   createdAt: Date;
   updatedAt: Date;
+  members?: ProjectMember[];
 }
 
 export interface Task {

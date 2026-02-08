@@ -1,4 +1,4 @@
-import type { Organization, Project, Task } from '../types';
+import type { Organization, Project, Task, ProjectMember } from '../types';
 import { authClient } from '../lib/auth-client';
 import { env } from '../lib/'
 
@@ -67,11 +67,22 @@ export const authApi = {
     return data as Organization[];
   },
 
+  listOrganizationMembers: async (organizationId: string) => {
+    return fetchClient<{ user: User, role: string, joinedAt: string }[]>(`${API_URL}/organization/${organizationId}/members`);
+  },
+
   createOrganization: async (name: string, slug?: string) => {
 
-    return fetchClient<Organization>(`${API_URL}/oraganisation`, {
+    return fetchClient<Organization>(`${API_URL}/organization`, {
       method: 'POST',
       body: JSON.stringify({ name, slug }),
+    });
+  },
+
+  inviteToOrganization: async (email: string, role: string, organizationId: string) => {
+    return fetchClient(`${API_URL}/organization/invite`, {
+      method: 'POST',
+      body: JSON.stringify({ email, role, organizationId })
     });
   },
 
@@ -93,7 +104,7 @@ export const dataApi = {
   },
 
   getProject: async (projectId: string) => {
-    return fetchClient<Project & { tasks: Task[] }>(`${API_URL}/projects/${projectId}`);
+    return fetchClient<Project & { tasks: Task[]; members: ProjectMember[] }>(`${API_URL}/projects/${projectId}`);
   },
 
   getProjectsByOrg: async (orgId: string) => {
@@ -104,6 +115,13 @@ export const dataApi = {
       console.warn("List projects endpoint missing in backend provided. Returning empty list.");
       return [];
     }
+  },
+
+  inviteMember: async (projectId: string, userId: string, role: string) => {
+    return fetchClient(`${API_URL}/projects/${projectId}/invite`, {
+      method: 'POST',
+      body: JSON.stringify({ userId, role })
+    });
   },
 
   createTask: async (projectId: string, title: string, deadline: string, priority: string) => {

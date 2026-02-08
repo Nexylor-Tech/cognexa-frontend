@@ -38,9 +38,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const [isOrgDropdownOpen, setIsOrgDropdownOpen] = useState(false);
 
   const navItems = [
-    { label: 'Tasks', icon: Briefcase, id: 'tasks' },
-    { label: 'Files', icon: FileText, id: 'files' },
-    { label: 'Research', icon: Search, id: 'research' },
     { label: 'Settings', icon: Settings, id: 'settings' },
     { label: 'Profile', icon: User, id: 'profile' },
   ];

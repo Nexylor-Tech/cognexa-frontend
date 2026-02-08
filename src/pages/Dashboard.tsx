@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Sidebar } from '../components/Sidebar';
 import { ThemeToggle } from '../components/ThemeToggle';
-import type { User, Organization, Project, Task } from '../types';
+import { ProjectView } from '../components/ProjectView';
+import type { User, Organization, Project, Task, ProjectMember } from '../types';
 import { authApi, dataApi } from '../services/api';
-import { Plus, CheckCircle, Clock } from 'lucide-react';
+import { LayoutDashboard, CheckSquare, FileText, Search } from 'lucide-react';
 
 interface DashboardProps {
   user: User;
@@ -16,12 +17,18 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onSignOut }) => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [currentProject, setCurrentProject] = useState<Project | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [members, setMembers] = useState<ProjectMember[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Tab state
+  const [activeTab, setActiveTab] = useState<'overview' | 'tasks' | 'files' | 'research'>('overview');
 
   // Modals state
   const [showNewOrgModal, setShowNewOrgModal] = useState(false);
   const [showNewProjectModal, setShowNewProjectModal] = useState(false);
   const [showNewTaskModal, setShowNewTaskModal] = useState(false);
+  const [showInviteOrgModal, setShowInviteOrgModal] = useState(false);
+  const [showAddToProjectModal, setShowAddToProjectModal] = useState(false);
 
   // Form state
   const [newOrgName, setNewOrgName] = useState('');
@@ -31,28 +38,42 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onSignOut }) => {
   const [newTaskDeadline, setNewTaskDeadline] = useState('');
   const [newTaskPriority, setNewTaskPriority] = useState('medium');
 
+  // Invite state
+  const [orgMembers, setOrgMembers] = useState<any[]>([]); 
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteRole, setInviteRole] = useState('member');
+  
+  // Add to Project State
+  const [selectedUserId, setSelectedUserId] = useState('');
+  const [selectedProjectRole, setSelectedProjectRole] = useState('viewer');
+
   // Initial Load
   useEffect(() => {
     loadOrganizations();
   }, []);
 
-  // When Org Changes, load projects
+  // When Org Changes, load projects and org members
   useEffect(() => {
     if (currentOrg) {
       loadProjects(currentOrg.id);
+      loadOrgMembers(currentOrg.id);
     } else {
       setProjects([]);
       setCurrentProject(null);
       setTasks([]);
+      setMembers([]);
+      setOrgMembers([]);
     }
   }, [currentOrg]);
 
-  // When Project Changes, load tasks
+  // When Project Changes, load tasks and members
   useEffect(() => {
     if (currentProject) {
-      loadTasks(currentProject.id);
+      loadProjectDetails(currentProject.id);
+      setActiveTab('overview'); // Reset tab on project switch
     } else {
       setTasks([]);
+      setMembers([]);
     }
   }, [currentProject]);
 
@@ -61,7 +82,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onSignOut }) => {
       const orgs = await authApi.listOrganizations();
       setOrganizations(orgs);
       if (orgs.length > 0) {
-        // Default to first org if none selected, or implement last visited logic
         setCurrentOrg(orgs[0]);
       }
     } catch (error) {
@@ -71,12 +91,20 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onSignOut }) => {
     }
   };
 
+  const loadOrgMembers = async (orgId: string) => {
+    try {
+      const members = await authApi.listOrganizationMembers(orgId);
+      setOrgMembers(members || []);
+    } catch (error) {
+      console.error("Failed to load org members", error);
+    }
+  };
+
   const loadProjects = async (orgId: string) => {
     try {
       const projs = await dataApi.getProjectsByOrg(orgId);
       setProjects(projs);
       if (projs.length > 0) {
-        // Auto select first project if none selected or if current project is not in the new list
         const currentProjectExists = currentProject && projs.some(p => p.id === currentProject.id);
         if (!currentProject || !currentProjectExists) {
           setCurrentProject(projs[0]);
@@ -89,13 +117,13 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onSignOut }) => {
     }
   };
 
-  const loadTasks = async (projectId: string) => {
+  const loadProjectDetails = async (projectId: string) => {
     try {
       const projectDetails = await dataApi.getProject(projectId);
-      // Backend returns project with tasks included in relation
       setTasks(projectDetails.tasks || []);
+      setMembers(projectDetails.members || []);
     } catch (error) {
-      console.error("Failed to load tasks", error);
+      console.error("Failed to load project details", error);
     }
   }
 
@@ -141,6 +169,33 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onSignOut }) => {
     }
   }
 
+  const handleInviteToOrg = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!currentOrg) return;
+    try {
+      await authApi.inviteToOrganization(inviteEmail, inviteRole, currentOrg.id);
+      alert("Invitation sent!");
+      setShowInviteOrgModal(false);
+      setInviteEmail('');
+    } catch (error) {
+      alert("Failed to invite member to organization");
+    }
+  };
+
+  const handleAddToProject = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!currentProject || !selectedUserId) return;
+    try {
+      await dataApi.inviteMember(currentProject.id, selectedUserId, selectedProjectRole);
+      // Reload details to show new member
+      loadProjectDetails(currentProject.id);
+      setShowAddToProjectModal(false);
+      setSelectedUserId('');
+    } catch (error) {
+      alert("Failed to add member to project");
+    }
+  }
+
   const onSelectProject = async (projectId: string) => {
     const proj = projects.find(p => p.id === projectId);
     if (proj) {
@@ -169,9 +224,46 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onSignOut }) => {
       <main className="flex-1 flex flex-col overflow-hidden relative">
         {/* Top Bar */}
         <header className="h-16 border-b border-overlay flex items-center justify-between px-6 bg-surface/50 backdrop-blur-sm">
-          <h1 className="text-xl font-bold text-rose">
-            {currentProject ? currentProject.name : 'Dashboard'}
-          </h1>
+          <div className="flex items-center gap-6">
+            <h1 className="text-xl font-bold text-rose mr-4">
+              {currentProject ? currentProject.name : 'Dashboard'}
+            </h1>
+            
+            {/* Top Navigation for Projects */}
+            {currentProject && (
+              <nav className="flex items-center gap-1 h-16">
+                 <button 
+                    onClick={() => setActiveTab('overview')}
+                    className={`flex items-center gap-2 px-3 h-full border-b-2 transition-colors text-sm font-medium
+                        ${activeTab === 'overview' ? 'border-iris text-iris' : 'border-transparent text-subtle hover:text-text hover:bg-overlay/30'}`}
+                 >
+                   <LayoutDashboard size={16} /> Overview
+                 </button>
+                 <button 
+                    onClick={() => setActiveTab('tasks')}
+                    className={`flex items-center gap-2 px-3 h-full border-b-2 transition-colors text-sm font-medium
+                        ${activeTab === 'tasks' ? 'border-iris text-iris' : 'border-transparent text-subtle hover:text-text hover:bg-overlay/30'}`}
+                 >
+                   <CheckSquare size={16} /> Tasks
+                 </button>
+                 <button 
+                    onClick={() => setActiveTab('files')}
+                    className={`flex items-center gap-2 px-3 h-full border-b-2 transition-colors text-sm font-medium
+                        ${activeTab === 'files' ? 'border-iris text-iris' : 'border-transparent text-subtle hover:text-text hover:bg-overlay/30'}`}
+                 >
+                   <FileText size={16} /> Files
+                 </button>
+                 <button 
+                    onClick={() => setActiveTab('research')}
+                    className={`flex items-center gap-2 px-3 h-full border-b-2 transition-colors text-sm font-medium
+                        ${activeTab === 'research' ? 'border-iris text-iris' : 'border-transparent text-subtle hover:text-text hover:bg-overlay/30'}`}
+                 >
+                   <Search size={16} /> Research
+                 </button>
+              </nav>
+            )}
+          </div>
+
           <div className="flex items-center gap-4">
             <span className="text-sm text-subtle hidden md:block">Welcome, {user.name}</span>
             <ThemeToggle />
@@ -180,7 +272,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onSignOut }) => {
         </header>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-hidden">
           {!currentOrg ? (
             <div className="flex flex-col items-center justify-center h-full text-muted">
               <p className="mb-4">You don't have any organizations yet.</p>
@@ -196,61 +288,19 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onSignOut }) => {
               </button>
             </div>
           ) : (
-            <div className="max-w-4xl mx-auto">
-              {/* Project Header */}
-              <div className="flex items-center justify-between mb-8">
-                <div>
-                  <h2 className="text-3xl font-bold text-text mb-2">Tasks</h2>
-                  <p className="text-subtle">Manage tasks for {currentProject.name}</p>
-                </div>
-                <button
-                  onClick={() => setShowNewTaskModal(true)}
-                  className="bg-love text-surface px-4 py-2 rounded flex items-center gap-2 hover:bg-rose transition-colors"
-                >
-                  <Plus size={18} /> New Task
-                </button>
-              </div>
-
-              {/* Task List */}
-              <div className="space-y-3">
-                {tasks.length === 0 && (
-                  <div className="text-center py-10 bg-overlay/30 rounded border border-dashed border-muted text-muted">
-                    No tasks found. Create one to get moving!
-                  </div>
-                )}
-                {tasks.map(task => (
-                  <div key={task.id} className="bg-surface p-4 rounded border border-overlay hover:border-muted transition-colors flex items-center justify-between group">
-                    <div className="flex items-center gap-4">
-                      <button className={`p-1 rounded-full border-2 ${task.status === 'done' ? 'bg-foam border-foam text-surface' : 'border-muted text-transparent hover:border-foam'}`}>
-                        <CheckCircle size={16} />
-                      </button>
-                      <div>
-                        <h3 className={`font-medium ${task.status === 'done' ? 'text-muted line-through' : 'text-text'}`}>
-                          {task.title}
-                        </h3>
-                        <div className="flex items-center gap-3 text-xs text-subtle mt-1">
-                          <span className={`px-2 py-0.5 rounded-full uppercase text-[10px] font-bold 
-                                                ${task.priority === 'high' ? 'bg-love/20 text-love' :
-                              task.priority === 'medium' ? 'bg-gold/20 text-gold' :
-                                'bg-foam/20 text-foam'}`
-                          }>
-                            {task.priority}
-                          </span>
-                          {task.deadline && (
-                            <span className="flex items-center gap-1">
-                              <Clock size={12} /> {new Date(task.deadline).toLocaleDateString()}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                      {/* Actions placeholder */}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <ProjectView
+              project={currentProject}
+              tasks={tasks}
+              members={members}
+              orgMembers={orgMembers}
+              activeTab={activeTab}
+              onNewTask={() => setShowNewTaskModal(true)}
+              onInviteToOrg={() => setShowInviteOrgModal(true)}
+              onAddToProject={(userId) => {
+                setSelectedUserId(userId);
+                setShowAddToProjectModal(true);
+              }}
+            />
           )}
         </div>
 
@@ -355,8 +405,75 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onSignOut }) => {
           </div>
         )}
 
+        {showInviteOrgModal && (
+          <div className="absolute inset-0 z-50 flex items-center justify-center bg-base/80 backdrop-blur-sm">
+            <div className="bg-surface p-6 rounded-lg shadow-xl border border-overlay w-full max-w-md">
+              <h3 className="text-xl font-bold text-text mb-4">Invite to Organization</h3>
+              <form onSubmit={handleInviteToOrg}>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs text-subtle mb-1">Email Address</label>
+                    <input
+                      type="email"
+                      value={inviteEmail}
+                      onChange={e => setInviteEmail(e.target.value)}
+                      className="w-full bg-overlay border border-muted/30 rounded p-2 text-text focus:outline-none focus:border-iris"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-subtle mb-1">Role</label>
+                    <select
+                      value={inviteRole}
+                      onChange={e => setInviteRole(e.target.value)}
+                      className="w-full bg-overlay border border-muted/30 rounded p-2 text-text focus:outline-none focus:border-iris"
+                    >
+                      <option value="member">Member</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="flex justify-end gap-2 mt-6">
+                  <button type="button" onClick={() => setShowInviteOrgModal(false)} className="px-4 py-2 text-subtle hover:text-text">Cancel</button>
+                  <button type="submit" className="px-4 py-2 bg-pine text-surface rounded hover:bg-foam">Send Invitation</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {showAddToProjectModal && (
+          <div className="absolute inset-0 z-50 flex items-center justify-center bg-base/80 backdrop-blur-sm">
+            <div className="bg-surface p-6 rounded-lg shadow-xl border border-overlay w-full max-w-md">
+              <h3 className="text-xl font-bold text-text mb-4">Add Member to Project</h3>
+              <form onSubmit={handleAddToProject}>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs text-subtle mb-1">Role</label>
+                    <select
+                      value={selectedProjectRole}
+                      onChange={e => setSelectedProjectRole(e.target.value)}
+                      className="w-full bg-overlay border border-muted/30 rounded p-2 text-text focus:outline-none focus:border-iris"
+                    >
+                      <option value="viewer">Viewer</option>
+                      <option value="editor">Editor</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                  </div>
+                  <p className="text-xs text-subtle">
+                    This will add the selected user to the current project.
+                  </p>
+                </div>
+                <div className="flex justify-end gap-2 mt-6">
+                  <button type="button" onClick={() => setShowAddToProjectModal(false)} className="px-4 py-2 text-subtle hover:text-text">Cancel</button>
+                  <button type="submit" className="px-4 py-2 bg-iris text-surface rounded hover:bg-gold">Add to Project</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
       </main>
     </div>
   );
 };
-
