@@ -21,7 +21,7 @@ export const Landing: React.FC = () => {
   return (
     <div className="min-h-screen bg-base text-text font-sans overflow-x-hidden">
       {showWaitlist && <JoinWaitlistForm onClose={() => setShowWaitlist(false)} />}
-      
+
       {/* Background Pattern */}
       <div
         className="fixed inset-0 pointer-events-none z-0 opacity-[0.15]"
@@ -296,11 +296,11 @@ export const Landing: React.FC = () => {
       <footer className="bg-surface border-t border-overlay py-12 px-6 relative z-10">
         <div className="max-w-7xl mx-auto grid md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-1">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-6 h-6 bg-pine rounded flex items-center justify-center text-surface font-bold text-xs">C</div>
-              <span className="font-bold text-text">Cognexa</span>
+            <div className="flex items-center gap-2">
+              <img src={`${IMAGE_URL}/cognexa.png`} alt="Cognexa" className="w-8 h-8 rounded-lg object-contain" />
+              <span className="text-xl font-bold tracking-tight text-text">Cognexa</span>
             </div>
-            <p className="text-xs text-subtle">© 2024 Cognexa Inc.</p>
+            <p className="text-xs text-subtle">© 2026 Cognexa Inc.</p>
           </div>
           <div>
             <h4 className="font-bold text-text mb-4">Product</h4>
