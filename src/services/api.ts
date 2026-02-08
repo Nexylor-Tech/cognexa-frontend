@@ -109,7 +109,7 @@ export const dataApi = {
   createTask: async (projectId: string, title: string, deadline: string, priority: string) => {
     return fetchClient<Task>(`${API_URL}/projects/${projectId}/tasks`, {
       method: 'POST',
-      body: JSON.stringify({ title, deadline, priority })
+      body: JSON.stringify({ title, priority, deadline })
     });
   }
 };

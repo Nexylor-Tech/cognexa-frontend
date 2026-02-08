@@ -43,6 +43,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onSignOut }) => {
     } else {
       setProjects([]);
       setCurrentProject(null);
+      setTasks([]);
     }
   }, [currentOrg]);
 
@@ -75,8 +76,13 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onSignOut }) => {
       const projs = await dataApi.getProjectsByOrg(orgId);
       setProjects(projs);
       if (projs.length > 0) {
-        // Auto select first project if none selected
-        if (!currentProject) onSelectProject(projs[0].id);
+        // Auto select first project if none selected or if current project is not in the new list
+        const currentProjectExists = currentProject && projs.some(p => p.id === currentProject.id);
+        if (!currentProject || !currentProjectExists) {
+          setCurrentProject(projs[0]);
+        }
+      } else {
+        setCurrentProject(null);
       }
     } catch (error) {
       console.error("Failed to load projects", error);
