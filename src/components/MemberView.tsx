@@ -66,7 +66,11 @@ export const MemberView: React.FC<MemberViewProps> = ({
               <div className="min-w-0 flex-1">
                 <div className="flex justify-between items-center">
                    <p className="text-sm font-medium text-text truncate">{member.user.name}</p>
-                   {isAssigned && <Shield size={10} className="text-subtle" title={projectMember?.role} />}
+                   {isAssigned && (
+                     <span title={projectMember?.role}>
+                       <Shield size={10} className="text-subtle" />
+                     </span>
+                   )}
                 </div>
                 <p className="text-xs text-subtle truncate">{member.user.email}</p>
               </div>

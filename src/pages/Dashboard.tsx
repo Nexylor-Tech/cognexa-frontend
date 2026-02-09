@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Sidebar } from '../components/Sidebar';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { ProjectView } from '../components/ProjectView';
-import type { User, Organization, Project, Task, ProjectMember } from '../types';
+import type { User, Organization, Project, Task, ProjectMember, FileItem } from '../types';
 import { authApi, dataApi } from '../services/api';
 import { LayoutDashboard, CheckSquare, FileText, Search } from 'lucide-react';
 
@@ -18,6 +18,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onSignOut }) => {
   const [currentProject, setCurrentProject] = useState<Project | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [members, setMembers] = useState<ProjectMember[]>([]);
+  const [files, setFiles] = useState<FileItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Tab state
@@ -62,6 +63,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onSignOut }) => {
       setCurrentProject(null);
       setTasks([]);
       setMembers([]);
+      setFiles([]);
       setOrgMembers([]);
     }
   }, [currentOrg]);
@@ -74,6 +76,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onSignOut }) => {
     } else {
       setTasks([]);
       setMembers([]);
+      setFiles([]);
     }
   }, [currentProject]);
 
@@ -119,9 +122,14 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onSignOut }) => {
 
   const loadProjectDetails = async (projectId: string) => {
     try {
-      const projectDetails = await dataApi.getProject(projectId);
+      // Parallel fetch for details and files
+      const [projectDetails, projectFiles] = await Promise.all([
+        dataApi.getProject(projectId),
+        dataApi.getFiles(projectId)
+      ]);
       setTasks(projectDetails.tasks || []);
       setMembers(projectDetails.members || []);
+      setFiles(projectFiles || []);
     } catch (error) {
       console.error("Failed to load project details", error);
     }
@@ -292,6 +300,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onSignOut }) => {
               project={currentProject}
               tasks={tasks}
               members={members}
+              files={files}
               orgMembers={orgMembers}
               activeTab={activeTab}
               onNewTask={() => setShowNewTaskModal(true)}
@@ -300,6 +309,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onSignOut }) => {
                 setSelectedUserId(userId);
                 setShowAddToProjectModal(true);
               }}
+              onFileUploaded={() => loadProjectDetails(currentProject.id)}
             />
           )}
         </div>

@@ -8,7 +8,7 @@ interface OverviewProps {
   members: ProjectMember[];
 }
 
-export const Overview: React.FC<OverviewProps> = ({ project, tasks, members }) => {
+export const Overview: React.FC<OverviewProps> = ({ tasks, members }) => {
   // Calculate Stats
   const stats = useMemo(() => {
     const total = tasks.length;

@@ -4,12 +4,9 @@ import {
   ChevronLeft,
   ChevronRight,
   Folder,
-  FileText,
-  Search,
   Settings,
   User,
-  Plus,
-  Briefcase
+  Plus
 } from 'lucide-react';
 import type { Organization, Project } from '../types';
 

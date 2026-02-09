@@ -54,6 +54,23 @@ export interface Task {
   createdAt: Date;
 }
 
+export interface FileItem {
+  id: string;
+  projectId: string;
+  name: string;
+  size: number;
+  mimeType: string;
+  storagePath: string;
+  status: 'pending' | 'processing' | 'ready' | 'failed';
+  createdAt: string;
+  uploader: {
+    id: string;
+    name: string;
+    email: string;
+    image?: string | null;
+  };
+}
+
 export interface AuthContextType {
   user: User | null;
   session: Session | null;

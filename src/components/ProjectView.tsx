@@ -2,28 +2,33 @@ import React from 'react';
 import { TaskView } from './TaskView';
 import { MemberView } from './MemberView';
 import { Overview } from './Overview';
-import type { Project, Task, ProjectMember, User } from '../types';
+import { FileView } from './FileView';
+import type { Project, Task, ProjectMember, User, FileItem } from '../types';
 
 interface ProjectViewProps {
   project: Project;
   tasks: Task[];
   members: ProjectMember[];
+  files: FileItem[];
   orgMembers: { user: User; role: string; joinedAt: string }[];
   activeTab: 'overview' | 'tasks' | 'files' | 'research';
   onNewTask: () => void;
   onInviteToOrg: () => void;
   onAddToProject: (userId: string) => void;
+  onFileUploaded: () => void;
 }
 
 export const ProjectView: React.FC<ProjectViewProps> = ({ 
   project, 
   tasks, 
-  members, 
+  members,
+  files, 
   orgMembers,
   activeTab,
   onNewTask, 
   onInviteToOrg,
-  onAddToProject
+  onAddToProject,
+  onFileUploaded
 }) => {
   return (
     <div className="flex h-full flex-col">
@@ -41,9 +46,11 @@ export const ProjectView: React.FC<ProjectViewProps> = ({
               />
             )}
             {activeTab === 'files' && (
-              <div className="flex flex-col items-center justify-center h-full text-muted border-2 border-dashed border-overlay rounded-xl m-10">
-                <p>Files module coming soon.</p>
-              </div>
+              <FileView 
+                projectId={project.id} 
+                files={files} 
+                onFileUploaded={onFileUploaded} 
+              />
             )}
             {activeTab === 'research' && (
               <div className="flex flex-col items-center justify-center h-full text-muted border-2 border-dashed border-overlay rounded-xl m-10">

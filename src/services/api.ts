@@ -1,4 +1,4 @@
-import type { Organization, Project, Task, ProjectMember } from '../types';
+import type { Organization, Project, Task, ProjectMember, User } from '../types';
 import { authClient } from '../lib/auth-client';
 import { env } from '../lib/'
 
@@ -128,6 +128,24 @@ export const dataApi = {
     return fetchClient<Task>(`${API_URL}/projects/${projectId}/tasks`, {
       method: 'POST',
       body: JSON.stringify({ title, priority, deadline })
+    });
+  },
+
+  getFiles: async (projectId: string) => {
+    return fetchClient<any[]>(`${API_URL}/projects/${projectId}/files`);
+  },
+
+  getSignedUrl: async (projectId: string, fileName: string, mimeType: string) => {
+    return fetchClient<{ signedUrl: string, path: string }>(`${API_URL}/projects/${projectId}/files/signedurl`, {
+      method: 'POST',
+      body: JSON.stringify({ fileName, mimeType })
+    });
+  },
+
+  confirmUpload: async (projectId: string, fileName: string, storagePath: string, mimeType: string, size: number) => {
+    return fetchClient(`${API_URL}/projects/${projectId}/files/confirm`, {
+      method: 'POST',
+      body: JSON.stringify({ fileName, storagePath, mimeType, size })
     });
   }
 };
