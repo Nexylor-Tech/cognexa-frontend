@@ -131,6 +131,19 @@ export const dataApi = {
     });
   },
 
+  updateTask: async (projectId: string, taskId: string, updates: Partial<Task>) => {
+    return fetchClient<Task>(`${API_URL}/projects/${projectId}/tasks/${taskId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(updates)
+    });
+  },
+
+  deleteTask: async (projectId: string, taskId: string) => {
+    return fetchClient<{ success: boolean; id: string }>(`${API_URL}/projects/${projectId}/tasks/${taskId}`, {
+      method: 'DELETE'
+    });
+  },
+
   getFiles: async (projectId: string) => {
     return fetchClient<any[]>(`${API_URL}/projects/${projectId}/files`);
   },

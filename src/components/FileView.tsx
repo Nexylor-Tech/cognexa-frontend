@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Upload, File as FileIcon, Loader } from 'lucide-react';
+import { Upload, Loader, FileText, AlertCircle } from 'lucide-react';
 import type { FileItem } from '../types';
 import { dataApi } from '../services/api';
 
@@ -9,16 +9,55 @@ interface FileViewProps {
   onFileUploaded: () => void;
 }
 
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const ALLOWED_EXTENSIONS = ['.pdf', '.txt', '.csv'];
+const ALLOWED_MIME_TYPES = [
+  'application/pdf',
+  'text/plain',
+  'text/csv',
+  'application/vnd.ms-excel',
+  'application/csv'
+];
+
 export const FileView: React.FC<FileViewProps> = ({ projectId, files, onFileUploaded }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
+  const [isDragging, setIsDragging] = useState(false);
+
+  const validateFile = (file: File): string | null => {
+    if (file.size > MAX_FILE_SIZE) {
+      return `File size exceeds 10MB limit. (${(file.size / 1024 / 1024).toFixed(2)}MB)`;
+    }
+
+    const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
+    const isValidExtension = ALLOWED_EXTENSIONS.includes(fileExtension);
+
+    // Check mime type if browser detects it
+    const isValidMime = ALLOWED_MIME_TYPES.includes(file.type) || !file.type; // Allow empty if browser fails to detect, rely on extension then
+
+    if (!isValidExtension || !isValidMime) {
+      return `Invalid file type. Only .pdf, .txt, .csv allowed.`;
+    }
+
+    return null;
+  };
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
-      await handleUpload(file);
+      await processUpload(file);
     }
+  };
+
+  const processUpload = async (file: File) => {
+    const validationError = validateFile(file);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    await handleUpload(file);
   };
 
   const handleUpload = async (file: File) => {
@@ -57,6 +96,29 @@ export const FileView: React.FC<FileViewProps> = ({ projectId, files, onFileUplo
     }
   };
 
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const file = e.dataTransfer.files[0]; // Handle only first file for now
+      await processUpload(file);
+    }
+  };
+
   const formatSize = (bytes: number) => {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
@@ -66,11 +128,16 @@ export const FileView: React.FC<FileViewProps> = ({ projectId, files, onFileUplo
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div
+      className="max-w-4xl mx-auto h-full flex flex-col"
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
       <div className="flex items-center justify-between mb-8">
         <div>
           <h2 className="text-3xl font-bold text-text mb-2">Files</h2>
-          <p className="text-subtle">Manage project files and assets</p>
+          <p className="text-subtle">Manage project files and assets (PDF, TXT, CSV up to 10MB)</p>
         </div>
         <div className="relative">
           <input
@@ -78,6 +145,7 @@ export const FileView: React.FC<FileViewProps> = ({ projectId, files, onFileUplo
             ref={fileInputRef}
             onChange={handleFileSelect}
             className="hidden"
+            accept=".pdf,.txt,.csv"
             disabled={uploading}
           />
           <button
@@ -92,39 +160,63 @@ export const FileView: React.FC<FileViewProps> = ({ projectId, files, onFileUplo
       </div>
 
       {error && (
-        <div className="bg-love/10 border border-love/20 text-love p-3 rounded mb-6 text-sm">
+        <div className="bg-love/10 border border-love/20 text-love p-3 rounded mb-6 text-sm flex items-center gap-2">
+          <AlertCircle size={16} />
           {error}
         </div>
       )}
 
-      <div className="space-y-3">
-        {files.length === 0 && (
-          <div className="text-center py-10 bg-overlay/30 rounded border border-dashed border-muted text-muted">
-            No files uploaded yet.
-          </div>
-        )}
-        {files.map((file) => (
-          <div key={file.id} className="bg-surface p-4 rounded border border-overlay hover:border-muted transition-colors flex items-center justify-between group">
-            <div className="flex items-center gap-4 min-w-0">
-              <div className="p-3 bg-iris/10 text-iris rounded-lg">
-                <FileIcon size={24} />
-              </div>
-              <div className="min-w-0">
-                <h3 className="font-medium text-text truncate pr-4" title={file.name}>
-                  {file.name}
-                </h3>
-                <div className="flex items-center gap-3 text-xs text-subtle mt-1">
-                  <span>{formatSize(file.size)}</span>
-                  <span>•</span>
-                  <span>Uploaded by {file.uploader.name || file.uploader.email}</span>
-                  <span>•</span>
-                  <span>{new Date(file.createdAt).toLocaleDateString()}</span>
-                </div>
+      {/* Drop Zone Overlay or Style */}
+      <div
+        className={`flex-1 rounded-xl transition-all duration-200 border-2 
+          ${isDragging
+            ? 'border-iris bg-iris/5 scale-[1.01] shadow-xl'
+            : 'border-transparent'}`}
+      >
+        <div className="space-y-3 p-1">
+          {files.length === 0 && (
+            <div className={`text-center py-20 rounded border-2 border-dashed transition-colors
+                ${isDragging ? 'border-iris bg-iris/10 text-iris' : 'bg-overlay/30 border-muted text-muted'}`}>
+              <div className="flex flex-col items-center gap-2">
+                <Upload size={32} className={isDragging ? 'animate-bounce' : ''} />
+                <p>
+                  {isDragging ? 'Drop file to upload' : 'No files uploaded yet. Drag & drop or click Upload.'}
+                </p>
+                <p className="text-xs text-subtle">Supported: .pdf, .txt, .csv (Max 10MB)</p>
               </div>
             </div>
-            {/* Can add download/delete actions here later */}
-          </div>
-        ))}
+          )}
+
+          {/* If dragging over existing list, show a drop indicator */}
+          {files.length > 0 && isDragging && (
+            <div className="p-8 border-2 border-dashed border-iris bg-iris/10 text-iris rounded-lg text-center mb-4 animate-pulse">
+              Drop to upload
+            </div>
+          )}
+
+          {files.map((file) => (
+            <div key={file.id} className="bg-surface p-4 rounded border border-overlay hover:border-muted transition-colors flex items-center justify-between group">
+              <div className="flex items-center gap-4 min-w-0">
+                <div className="p-3 bg-iris/10 text-iris rounded-lg">
+                  <FileText size={24} />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="font-medium text-text truncate pr-4" title={file.name}>
+                    {file.name}
+                  </h3>
+                  <div className="flex items-center gap-3 text-xs text-subtle mt-1">
+                    <span>{formatSize(file.size)}</span>
+                    <span>•</span>
+                    <span>Uploaded by {file.uploader.name || file.uploader.email}</span>
+                    <span>•</span>
+                    <span>{new Date(file.createdAt).toLocaleDateString()}</span>
+                  </div>
+                </div>
+              </div>
+              {/* Can add download/delete actions here later */}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

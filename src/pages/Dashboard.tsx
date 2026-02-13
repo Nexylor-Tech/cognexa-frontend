@@ -40,10 +40,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onSignOut }) => {
   const [newTaskPriority, setNewTaskPriority] = useState('medium');
 
   // Invite state
-  const [orgMembers, setOrgMembers] = useState<any[]>([]); 
+  const [orgMembers, setOrgMembers] = useState<any[]>([]);
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState('member');
-  
+
   // Add to Project State
   const [selectedUserId, setSelectedUserId] = useState('');
   const [selectedProjectRole, setSelectedProjectRole] = useState('viewer');
@@ -236,38 +236,38 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onSignOut }) => {
             <h1 className="text-xl font-bold text-rose mr-4">
               {currentProject ? currentProject.name : 'Dashboard'}
             </h1>
-            
+
             {/* Top Navigation for Projects */}
             {currentProject && (
               <nav className="flex items-center gap-1 h-16">
-                 <button 
-                    onClick={() => setActiveTab('overview')}
-                    className={`flex items-center gap-2 px-3 h-full border-b-2 transition-colors text-sm font-medium
+                <button
+                  onClick={() => setActiveTab('overview')}
+                  className={`flex items-center gap-2 px-3 h-full border-b-2 transition-colors text-sm font-medium
                         ${activeTab === 'overview' ? 'border-iris text-iris' : 'border-transparent text-subtle hover:text-text hover:bg-overlay/30'}`}
-                 >
-                   <LayoutDashboard size={16} /> Overview
-                 </button>
-                 <button 
-                    onClick={() => setActiveTab('tasks')}
-                    className={`flex items-center gap-2 px-3 h-full border-b-2 transition-colors text-sm font-medium
+                >
+                  <LayoutDashboard size={16} /> Overview
+                </button>
+                <button
+                  onClick={() => setActiveTab('tasks')}
+                  className={`flex items-center gap-2 px-3 h-full border-b-2 transition-colors text-sm font-medium
                         ${activeTab === 'tasks' ? 'border-iris text-iris' : 'border-transparent text-subtle hover:text-text hover:bg-overlay/30'}`}
-                 >
-                   <CheckSquare size={16} /> Tasks
-                 </button>
-                 <button 
-                    onClick={() => setActiveTab('files')}
-                    className={`flex items-center gap-2 px-3 h-full border-b-2 transition-colors text-sm font-medium
+                >
+                  <CheckSquare size={16} /> Tasks
+                </button>
+                <button
+                  onClick={() => setActiveTab('files')}
+                  className={`flex items-center gap-2 px-3 h-full border-b-2 transition-colors text-sm font-medium
                         ${activeTab === 'files' ? 'border-iris text-iris' : 'border-transparent text-subtle hover:text-text hover:bg-overlay/30'}`}
-                 >
-                   <FileText size={16} /> Files
-                 </button>
-                 <button 
-                    onClick={() => setActiveTab('research')}
-                    className={`flex items-center gap-2 px-3 h-full border-b-2 transition-colors text-sm font-medium
+                >
+                  <FileText size={16} /> Files
+                </button>
+                <button
+                  onClick={() => setActiveTab('research')}
+                  className={`flex items-center gap-2 px-3 h-full border-b-2 transition-colors text-sm font-medium
                         ${activeTab === 'research' ? 'border-iris text-iris' : 'border-transparent text-subtle hover:text-text hover:bg-overlay/30'}`}
-                 >
-                   <Search size={16} /> Research
-                 </button>
+                >
+                  <Search size={16} /> Research
+                </button>
               </nav>
             )}
           </div>
@@ -310,6 +310,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onSignOut }) => {
                 setShowAddToProjectModal(true);
               }}
               onFileUploaded={() => loadProjectDetails(currentProject.id)}
+              onTaskUpdate={() => loadProjectDetails(currentProject.id)}
             />
           )}
         </div>
