@@ -3,6 +3,7 @@ import { TaskView } from './TaskView';
 import { MemberView } from './MemberView';
 import { Overview } from './Overview';
 import { FileView } from './FileView';
+import { Chatbot } from './Chatbot';
 import type { Project, Task, ProjectMember, User, FileItem } from '../types';
 
 interface ProjectViewProps {
@@ -56,9 +57,7 @@ export const ProjectView: React.FC<ProjectViewProps> = ({
             />
           )}
           {activeTab === 'research' && (
-            <div className="flex flex-col items-center justify-center h-full text-muted border-2 border-dashed border-overlay rounded-xl m-10">
-              <p>Research module coming soon.</p>
-            </div>
+            <Chatbot projectId={project.id} />
           )}
         </div>
 

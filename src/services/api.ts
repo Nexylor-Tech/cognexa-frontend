@@ -160,5 +160,12 @@ export const dataApi = {
       method: 'POST',
       body: JSON.stringify({ fileName, storagePath, mimeType, size })
     });
+  },
+
+  sendChatMessage: async (projectId: string, message: string) => {
+    return fetchClient<{ answer: string; intent: string }>(`${API_URL}/projects/${projectId}/chat`, {
+      method: 'POST',
+      body: JSON.stringify({ message })
+    });
   }
 };
