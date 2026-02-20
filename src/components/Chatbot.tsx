@@ -26,6 +26,10 @@ export const Chatbot: React.FC<ChatbotProps> = ({ projectId }) => {
     const saved = localStorage.getItem(`chat_response_${projectId}`);
     return saved || null;
   });
+  const [processedFiles, setProcessedFiles] = useState<string[]>(() => {
+    const saved = localStorage.getItem(`chat_files_${projectId}`);
+    return saved ? JSON.parse(saved) : [];
+  });
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -52,13 +56,23 @@ export const Chatbot: React.FC<ChatbotProps> = ({ projectId }) => {
     }
   }, [latestResponse, projectId]);
 
+  useEffect(() => {
+    if (processedFiles.length > 0) {
+      localStorage.setItem(`chat_files_${projectId}`, JSON.stringify(processedFiles));
+    } else {
+      localStorage.removeItem(`chat_files_${projectId}`);
+    }
+  }, [processedFiles, projectId]);
+
   const handleClear = () => {
     setMessages([]);
     setLatestResponse(null);
+    setProcessedFiles([]);
     setInput('');
     localStorage.removeItem(`chat_history_${projectId}`);
     localStorage.removeItem(`chat_input_${projectId}`);
     localStorage.removeItem(`chat_response_${projectId}`);
+    localStorage.removeItem(`chat_files_${projectId}`);
   };
 
   const handleSend = async (e?: React.FormEvent) => {
@@ -75,6 +89,7 @@ export const Chatbot: React.FC<ChatbotProps> = ({ projectId }) => {
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setLoading(true);
+    setProcessedFiles([]); // Clear previous files while loading
 
     try {
       const result = await dataApi.sendChatMessage(projectId, userMessage.content);
@@ -82,6 +97,9 @@ export const Chatbot: React.FC<ChatbotProps> = ({ projectId }) => {
       // We don't add the assistant response to the 'messages' list anymore,
       // we only set it as the latest response.
       setLatestResponse(result.answer);
+      if (result.processedFiles) {
+        setProcessedFiles(result.processedFiles);
+      }
     } catch (error) {
       console.error('Failed to send message:', error);
       setLatestResponse("I'm sorry, I encountered an error processing your request.");
@@ -183,6 +201,11 @@ export const Chatbot: React.FC<ChatbotProps> = ({ projectId }) => {
         
         {latestResponse ? (
           <div className="prose prose-invert max-w-none">
+            {processedFiles.length > 0 && (
+              <p className="text-xs text-subtle mb-4">
+                File processed - {processedFiles.join(', ')}
+              </p>
+            )}
             <div className="whitespace-pre-wrap text-text leading-relaxed">
               {latestResponse}
             </div>
