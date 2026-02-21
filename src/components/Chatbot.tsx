@@ -111,10 +111,10 @@ export const Chatbot: React.FC<ChatbotProps> = ({ projectId }) => {
   return (
     <div className="flex h-full gap-6 p-6">
       {/* Left Side: Chat Interface */}
-      <div className="w-1/3 flex flex-col bg-surface border border-overlay rounded-xl shadow-sm overflow-hidden h-full">
+      <div className="w-1/3 flex flex-col bg-surface border border-overlay rounded-[5px] shadow-sm overflow-hidden h-full">
         <div className="p-4 border-b border-overlay bg-surface flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="p-2 bg-iris/10 text-iris rounded-lg">
+            <div className="p-2 bg-iris/10 text-iris rounded-[5px]">
               <Bot size={20} />
             </div>
             <div>
@@ -124,7 +124,7 @@ export const Chatbot: React.FC<ChatbotProps> = ({ projectId }) => {
           </div>
           <button 
             onClick={handleClear}
-            className="p-2 text-subtle hover:text-love hover:bg-love/10 rounded-lg transition-colors"
+            className="p-2 text-subtle hover:text-love hover:bg-love/10 rounded-[5px] transition-colors"
             title="Clear Chat"
           >
             <Trash2 size={18} />
@@ -152,7 +152,7 @@ export const Chatbot: React.FC<ChatbotProps> = ({ projectId }) => {
                 <User size={14} />
               </div>
               <div className={`
-                max-w-[85%] rounded-lg p-3 text-sm
+                max-w-[85%] rounded-[5px] p-3 text-sm
                 bg-pine text-surface
               `}>
                 <p className="whitespace-pre-wrap">{msg.content}</p>
@@ -164,7 +164,7 @@ export const Chatbot: React.FC<ChatbotProps> = ({ projectId }) => {
                <div className="w-8 h-8 rounded-full bg-iris/10 text-iris flex items-center justify-center shrink-0">
                  <Bot size={14} />
                </div>
-               <div className="bg-overlay border border-muted/20 text-text rounded-lg p-3">
+               <div className="bg-overlay border border-muted/20 text-text rounded-[5px] p-3">
                  <Loader size={16} className="animate-spin text-subtle" />
                </div>
             </div>
@@ -179,13 +179,13 @@ export const Chatbot: React.FC<ChatbotProps> = ({ projectId }) => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask a question..."
-              className="w-full bg-overlay border border-muted/20 rounded-lg py-3 pl-4 pr-12 text-text focus:outline-none focus:border-iris transition-colors"
+              className="w-full bg-overlay border border-muted/20 rounded-[5px] py-3 pl-4 pr-12 text-text focus:outline-none focus:border-iris transition-colors"
               disabled={loading}
             />
             <button
               type="submit"
               disabled={!input.trim() || loading}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-iris text-surface rounded-md hover:bg-foam disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-iris text-surface rounded-[5px] hover:bg-foam disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <Send size={16} />
             </button>
@@ -194,7 +194,7 @@ export const Chatbot: React.FC<ChatbotProps> = ({ projectId }) => {
       </div>
 
       {/* Right Side: Output / Detailed View */}
-      <div className="flex-1 bg-surface border border-overlay rounded-xl shadow-sm p-6 overflow-y-auto h-full">
+      <div className="flex-1 bg-surface border border-overlay rounded-[5px] shadow-sm p-6 overflow-y-auto h-full">
         <h2 className="text-xl font-bold text-text mb-6 flex items-center gap-2">
           Research Output
         </h2>
@@ -211,7 +211,7 @@ export const Chatbot: React.FC<ChatbotProps> = ({ projectId }) => {
             </div>
           </div>
         ) : (
-           <div className="h-full flex flex-col items-center justify-center text-muted border-2 border-dashed border-overlay/50 rounded-lg">
+           <div className="h-full flex flex-col items-center justify-center text-muted border-2 border-dashed border-overlay/50 rounded-[5px]">
              <p>The assistant's detailed response will appear here.</p>
            </div>
         )}

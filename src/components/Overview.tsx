@@ -55,8 +55,8 @@ export const Overview: React.FC<OverviewProps> = ({ tasks, members }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         {/* Stats Cards */}
-        <div className="bg-surface p-6 rounded-xl border border-overlay shadow-sm flex items-center gap-4">
-          <div className="p-3 bg-foam/20 rounded-lg text-foam">
+        <div className="bg-surface p-6 rounded-[5px] border border-overlay shadow-sm flex items-center gap-4">
+          <div className="p-3 bg-foam/20 rounded-[5px] text-foam">
             <CheckCircle size={24} />
           </div>
           <div>
@@ -65,8 +65,8 @@ export const Overview: React.FC<OverviewProps> = ({ tasks, members }) => {
           </div>
         </div>
 
-        <div className="bg-surface p-6 rounded-xl border border-overlay shadow-sm flex items-center gap-4">
-          <div className="p-3 bg-gold/20 rounded-lg text-gold">
+        <div className="bg-surface p-6 rounded-[5px] border border-overlay shadow-sm flex items-center gap-4">
+          <div className="p-3 bg-gold/20 rounded-[5px] text-gold">
             <Clock size={24} />
           </div>
           <div>
@@ -75,8 +75,8 @@ export const Overview: React.FC<OverviewProps> = ({ tasks, members }) => {
           </div>
         </div>
 
-        <div className="bg-surface p-6 rounded-xl border border-overlay shadow-sm flex items-center gap-4">
-          <div className="p-3 bg-love/20 rounded-lg text-love">
+        <div className="bg-surface p-6 rounded-[5px] border border-overlay shadow-sm flex items-center gap-4">
+          <div className="p-3 bg-love/20 rounded-[5px] text-love">
             <AlertCircle size={24} />
           </div>
           <div>
@@ -88,7 +88,7 @@ export const Overview: React.FC<OverviewProps> = ({ tasks, members }) => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Graph Section */}
-        <div className="lg:col-span-2 bg-surface p-6 rounded-xl border border-overlay shadow-sm">
+        <div className="lg:col-span-2 bg-surface p-6 rounded-[5px] border border-overlay shadow-sm">
           <div className="flex items-center gap-2 mb-6">
             <BarChart size={20} className="text-subtle" />
             <h3 className="text-lg font-semibold text-text">Task Progress</h3>
@@ -101,7 +101,7 @@ export const Overview: React.FC<OverviewProps> = ({ tasks, members }) => {
                  <span className="text-text">Completed</span>
                  <span className="text-subtle">{stats.done} / {stats.total}</span>
                </div>
-               <div className="h-3 bg-overlay rounded-full overflow-hidden">
+               <div className="h-3 bg-overlay rounded-[5px] overflow-hidden">
                  <div className="h-full bg-foam transition-all duration-500" style={{ width: `${getPercent(stats.done)}%` }} />
                </div>
              </div>
@@ -111,7 +111,7 @@ export const Overview: React.FC<OverviewProps> = ({ tasks, members }) => {
                  <span className="text-text">In Progress</span>
                  <span className="text-subtle">{stats.inProgress} / {stats.total}</span>
                </div>
-               <div className="h-3 bg-overlay rounded-full overflow-hidden">
+               <div className="h-3 bg-overlay rounded-[5px] overflow-hidden">
                  <div className="h-full bg-gold transition-all duration-500" style={{ width: `${getPercent(stats.inProgress)}%` }} />
                </div>
              </div>
@@ -121,7 +121,7 @@ export const Overview: React.FC<OverviewProps> = ({ tasks, members }) => {
                  <span className="text-text">To Do</span>
                  <span className="text-subtle">{stats.todo} / {stats.total}</span>
                </div>
-               <div className="h-3 bg-overlay rounded-full overflow-hidden">
+               <div className="h-3 bg-overlay rounded-[5px] overflow-hidden">
                  <div className="h-full bg-love transition-all duration-500" style={{ width: `${getPercent(stats.todo)}%` }} />
                </div>
              </div>
@@ -129,7 +129,7 @@ export const Overview: React.FC<OverviewProps> = ({ tasks, members }) => {
         </div>
 
         {/* Recent Activity */}
-        <div className="bg-surface p-6 rounded-xl border border-overlay shadow-sm">
+        <div className="bg-surface p-6 rounded-[5px] border border-overlay shadow-sm">
           <h3 className="text-lg font-semibold text-text mb-6">Recent Activity</h3>
           <div className="space-y-6">
             {activities.length === 0 && <p className="text-sm text-subtle">No recent activity.</p>}
@@ -140,7 +140,7 @@ export const Overview: React.FC<OverviewProps> = ({ tasks, members }) => {
                    <div className="absolute left-[15px] top-8 bottom-[-24px] w-0.5 bg-overlay" />
                  )}
                  <div className="relative z-10 bg-surface">
-                   <div className="p-1.5 rounded-full bg-overlay/50 border border-muted/20">
+                   <div className="p-1.5 rounded-[5px] bg-overlay/50 border border-muted/20">
                      {item.icon}
                    </div>
                  </div>
