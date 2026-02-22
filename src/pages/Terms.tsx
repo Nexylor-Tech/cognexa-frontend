@@ -17,7 +17,7 @@ export const Terms = () => {
       <main className="max-w-3xl mx-auto px-6 py-16">
         <h1 className="text-3xl font-bold text-text mb-8">Terms of Service</h1>
         <div className="prose prose-lg dark:prose-invert text-subtle">
-          <p className="mb-4">Effective Date: October 26, 2024</p>
+          <p className="mb-4">Effective Date: October 26, 2026</p>
 
           <h3 className="text-xl font-semibold text-text mt-8 mb-4">1. Acceptance of Terms</h3>
           <p className="mb-4">
