@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 import { env } from '../lib';
 import { ThemeToggle } from '../components/ThemeToggle';
@@ -11,6 +11,14 @@ interface LandingProps {
 }
 export const Landing: React.FC<LandingProps> = ({ onSignInClick }) => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"]
+  });
+
+  const scale = useTransform(scrollYProgress, [0, 0.5], [0.8, 1]);
+  const opacity = useTransform(scrollYProgress, [0, 0.3], [0, 1]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -41,21 +49,21 @@ export const Landing: React.FC<LandingProps> = ({ onSignInClick }) => {
       ></div>
 
       {/* Navigation */}
-      <div className="fixed top-0 left-0 right-0 z-100 flex justify-center p-4 pointer-events-none">
+      <div className="fixed top-0 left-0 right-0 z-100 flex justify-center pointer-events-none">
         <motion.nav
           initial={false}
           animate={{
-            width: isScrolled ? "auto" : "100%",
-            maxWidth: isScrolled ? "600px" : "1280px",
-            borderRadius: "5px",
+            width: isScrolled ? "min(600px, 90%)" : "100%",
+            marginTop: isScrolled ? "1.5rem" : "0rem",
+            borderRadius: isScrolled ? "5px" : "0px",
             backgroundColor: isScrolled ? "rgba(var(--surface-rgb), 0.9)" : "transparent",
             boxShadow: isScrolled ? "0 20px 40px -10px rgba(0,0,0,0.3)" : "none",
             border: isScrolled ? "1px solid rgba(var(--iris-rgb), 0.3)" : "1px solid transparent",
-            padding: isScrolled ? "0.5rem 1.5rem" : "0rem 1.5rem",
+            padding: isScrolled ? "0.5rem 1.5rem" : "0rem 3rem",
           }}
           transition={{
-            duration: 0.4,
-            ease: [0.23, 1, 0.32, 1] // Custom cubic-bezier for a smooth, single-step feel
+            duration: 0.2,
+            ease: "easeInOut",
           }}
           className={`pointer-events-auto flex items-center justify-between h-16 backdrop-blur-xl`}
         >
@@ -67,20 +75,13 @@ export const Landing: React.FC<LandingProps> = ({ onSignInClick }) => {
           </div>
 
           <AnimatePresence>
-            {!isScrolled && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95, width: 0 }}
-                animate={{ opacity: 1, scale: 1, width: "auto" }}
-                exit={{ opacity: 0, scale: 0.95, width: 0 }}
-                transition={{ duration: 0.3 }}
-                className="hidden md:flex items-center gap-8 text-sm font-medium text-subtle px-8 overflow-hidden whitespace-nowrap"
-              >
-                <a href="#features" className="hover:text-text transition-colors">Features</a>
-                <a href="#solutions" className="hover:text-text transition-colors">Solutions</a>
-                <a href="#resources" className="hover:text-text transition-colors">Resources</a>
-                <a href="#pricing" className="hover:text-text transition-colors">Pricing</a>
-              </motion.div>
-            )}
+            <motion.div
+              className="hidden md:flex items-center gap-8 text-sm font-medium text-subtle px-4 overflow-hidden whitespace-nowrap"
+            >
+              <a href="#features" className="hover:text-text transition-colors">Features</a>
+              <a href="#blog" className="hover:text-text transition-colors">Blogs</a>
+              <a href="#pricing" className="hover:text-text transition-colors">Pricing</a>
+            </motion.div>
           </AnimatePresence>
 
           <div className="flex items-center gap-4 shrink-0">
@@ -98,8 +99,8 @@ export const Landing: React.FC<LandingProps> = ({ onSignInClick }) => {
       <div className="h-20"></div> {/* Spacer for fixed nav */}
 
       {/* Hero Section */}
-      <section className="relative z-10 pt-16 pb-32 px-6">
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
+      <section className="relative z-10 min-h-[calc(100vh-5rem)] flex items-center px-6 pb-20">
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center w-full">
 
           {/* Hero Copy */}
           <motion.div
@@ -109,9 +110,6 @@ export const Landing: React.FC<LandingProps> = ({ onSignInClick }) => {
             variants={revealVariants}
             className="text-center lg:text-left"
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-[5px] bg-iris/10 text-iris text-xs font-bold uppercase tracking-wider mb-6">
-              AI-Native Execution
-            </div>
             <h1 className="text-5xl md:text-6xl font-extrabold text-text leading-[1.1] mb-6 tracking-tight">
               Think, plan, and track <br className="hidden lg:block" />
               <span className="text-transparent bg-clip-text bg-linear-to-r from-pine to-foam">
@@ -127,11 +125,6 @@ export const Landing: React.FC<LandingProps> = ({ onSignInClick }) => {
                 className="px-8 py-4 bg-pine text-surface text-lg font-semibold rounded-[5px] hover:bg-pine/90 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
               >
                 Sign Up
-              </button>
-              <button
-                className="px-8 py-4 bg-surface border border-overlay text-text text-lg font-semibold rounded-[5px] hover:bg-overlay transition-colors"
-              >
-                View documentation
               </button>
             </div>
             <p className="mt-4 text-sm text-muted">
@@ -212,28 +205,30 @@ export const Landing: React.FC<LandingProps> = ({ onSignInClick }) => {
       </section>
 
       {/* Cognitive Layer Section */}
-      <section className="relative py-32 px-6 overflow-hidden border-y border-overlay">
-        <img
-          src="https://picsum.photos/seed/cognitive/1920/1080?blur=10"
-          className="absolute inset-0 w-full h-full object-cover opacity-20"
-          alt="Cognitive Layer Background"
-          referrerPolicy="no-referrer"
-        />
-        <div className="absolute inset-0 bg-base/80 backdrop-blur-sm"></div>
+      <section ref={containerRef} className="relative py-32 px-6 overflow-hidden border-y border-overlay">
+        <motion.div style={{ scale, opacity }} className="relative mx-auto w-fit">
+          <img
+            src={`${IMAGE_URL}/dashboard.png`}
+            className="block max-w-full h-auto object-contain opacity-100 rounded-[5px] shadow-2xl border border-overlay"
+            alt="Cognitive Layer Background"
+            referrerPolicy="no-referrer"
+          />
+          <div className="absolute inset-0"></div>
+        </motion.div>
 
-        <div className="relative z-10 max-w-7xl mx-auto">
+        <div className="relative z-10 max-w-7xl mx-auto mt-[-10%] flex flex-col items-center">
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: false, amount: 0.3 }}
             variants={revealVariants}
-            className="max-w-3xl"
+            className="max-w-3xl text-center bg-base p-8 rounded-[5px] shadow-xl border border-overlay"
           >
             <h2 className="text-4xl font-black text-text leading-tight mb-8">
               Cognexa Is Not a Storage Tool. <br />
               <span className="text-iris">It’s a Cognitive Layer.</span>
             </h2>
-            <ul className="grid md:grid-cols-2 gap-6 mb-12">
+            <ul className="grid md:grid-cols-2 gap-6 mb-12 text-left">
               {[
                 "Reads your project documents",
                 "Processes meeting transcripts privately",
@@ -284,27 +279,19 @@ export const Landing: React.FC<LandingProps> = ({ onSignInClick }) => {
             {[
               {
                 step: "01",
-                user: "“What tasks are still pending?”",
-                action: "Queries structured task table",
-                result: "Returns filtered results, deadlines and owners.",
-                footer: "No guessing. No manual filtering.",
-                img: "https://picsum.photos/seed/step1/1200/800?blur=2"
+                user: "uploads: documents",
+                action: "Processes document",
+                result: "Extracts schedules, Detects tasks",
+                footer: "Embeds knowledge into project memory",
+                img: `${IMAGE_URL}/files.png`
               },
               {
                 step: "02",
-                user: "“What was decided in last sprint meeting?”",
-                action: "Retrieves transcript & extracts decision points",
-                result: "Summarizes clearly and links related tasks.",
-                footer: "Contextual memory across meetings.",
-                img: "https://picsum.photos/seed/step2/1200/800?blur=2"
-              },
-              {
-                step: "03",
-                user: "“Reschedule overdue tasks and notify Slack.”",
-                action: "Identifies overdue tasks & updates deadlines",
-                result: "Sends summary to Slack and logs the action.",
-                footer: "It doesn’t just answer. It acts.",
-                img: "https://picsum.photos/seed/step3/1200/800?blur=2"
+                user: "“Who are the attendees in the meeting?”",
+                action: "Extracts meeting participants",
+                result: "Groups them by event",
+                footer: "Responds with structured clarity",
+                img: `${IMAGE_URL}/chatbot.png`
               }
             ].map((item, i) => (
               <div key={i} className={`flex flex-col ${i % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} gap-16 items-center`}>
@@ -313,16 +300,16 @@ export const Landing: React.FC<LandingProps> = ({ onSignInClick }) => {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: false, amount: 0.3 }}
                   transition={{ duration: 0.8 }}
-                  className="w-full lg:w-1/2"
+                  className="w-full lg:w-1/2 flex justify-center"
                 >
-                  <div className="relative h-125 rounded-[5px] overflow-hidden shadow-2xl group border border-overlay">
+                  <div className="relative rounded-[5px] overflow-hidden shadow-2xl group border border-overlay w-fit">
                     <img
                       src={item.img}
-                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                      className="block max-w-full h-auto object-contain transition-transform duration-1000 group-hover:scale-110"
                       alt={`Step ${item.step}`}
                       referrerPolicy="no-referrer"
                     />
-                    <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px] group-hover:bg-black/20 transition-colors"></div>
+                    <div className="absolute inset-0 bg-black/40 backdrop-blur-[0px] group-hover:bg-black/20 transition-colors"></div>
                   </div>
                 </motion.div>
 
@@ -335,9 +322,9 @@ export const Landing: React.FC<LandingProps> = ({ onSignInClick }) => {
                 >
                   <div className="text-6xl font-black text-overlay mb-4">{item.step}</div>
                   <h4 className="text-3xl font-bold text-text">{item.footer}</h4>
-                  
+
                   {/* Moved Content Card */}
-                  <div className="bg-surface p-8 rounded-[5px] border border-overlay shadow-lg mt-6">
+                  <div className=" p-8 rounded-[5px] mt-6">
                     <div className="flex items-center gap-3 mb-4">
                       <div className="w-8 h-8 rounded-[5px] bg-iris flex items-center justify-center text-xs font-bold text-surface">U</div>
                       <p className="italic text-xl font-medium text-text">{item.user}</p>

@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { Send, Bot, User, Sparkles, Loader, Trash2 } from 'lucide-react';
 import { dataApi } from '../services/api';
 
@@ -200,15 +202,15 @@ export const Chatbot: React.FC<ChatbotProps> = ({ projectId }) => {
         </h2>
         
         {latestResponse ? (
-          <div className="prose prose-invert max-w-none">
+          <div className="prose dark:prose-invert max-w-none text-text">
             {processedFiles.length > 0 && (
               <p className="text-xs text-subtle mb-4">
                 File processed - {processedFiles.join(', ')}
               </p>
             )}
-            <div className="whitespace-pre-wrap text-text leading-relaxed">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
               {latestResponse}
-            </div>
+            </ReactMarkdown>
           </div>
         ) : (
            <div className="h-full flex flex-col items-center justify-center text-muted border-2 border-dashed border-overlay/50 rounded-[5px]">

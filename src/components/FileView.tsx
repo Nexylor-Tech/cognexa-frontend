@@ -173,9 +173,9 @@ export const FileView: React.FC<FileViewProps> = ({ projectId, files, onFileUplo
             ? 'border-iris bg-iris/5 scale-[1.01] shadow-xl'
             : 'border-transparent'}`}
       >
-        <div className="space-y-3 p-1">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 p-1">
           {files.length === 0 && (
-            <div className={`text-center py-20 rounded border-2 border-dashed transition-colors
+            <div className={`col-span-full text-center py-20 rounded border-2 border-dashed transition-colors
                 ${isDragging ? 'border-iris bg-iris/10 text-iris' : 'bg-overlay/30 border-muted text-muted'}`}>
               <div className="flex flex-col items-center gap-2">
                 <Upload size={32} className={isDragging ? 'animate-bounce' : ''} />
@@ -189,31 +189,28 @@ export const FileView: React.FC<FileViewProps> = ({ projectId, files, onFileUplo
 
           {/* If dragging over existing list, show a drop indicator */}
           {files.length > 0 && isDragging && (
-            <div className="p-8 border-2 border-dashed border-iris bg-iris/10 text-iris rounded-lg text-center mb-4 animate-pulse">
+            <div className="col-span-full p-8 border-2 border-dashed border-iris bg-iris/10 text-iris rounded-lg text-center mb-4 animate-pulse">
               Drop to upload
             </div>
           )}
 
           {files.map((file) => (
-            <div key={file.id} className="bg-surface p-4 rounded border border-overlay hover:border-muted transition-colors flex items-center justify-between group">
-              <div className="flex items-center gap-4 min-w-0">
-                <div className="p-3 bg-iris/10 text-iris rounded-lg">
-                  <FileText size={24} />
-                </div>
-                <div className="min-w-0">
-                  <h3 className="font-medium text-text truncate pr-4" title={file.name}>
-                    {file.name}
-                  </h3>
-                  <div className="flex items-center gap-3 text-xs text-subtle mt-1">
+            <div key={file.id} className="bg-surface p-4 rounded border border-overlay hover:border-muted transition-colors flex flex-col items-start gap-3 group relative h-full">
+              <div className="p-3 bg-iris/10 text-iris rounded-lg mb-1">
+                <FileText size={24} />
+              </div>
+              <div className="min-w-0 w-full">
+                <h3 className="font-medium text-text truncate w-full" title={file.name}>
+                  {file.name}
+                </h3>
+                <div className="flex flex-col gap-1 text-xs text-subtle mt-2">
+                  <span className="truncate">By {file.uploader.name || file.uploader.email}</span>
+                  <div className="flex justify-between items-center w-full mt-1">
                     <span>{formatSize(file.size)}</span>
-                    <span>•</span>
-                    <span>Uploaded by {file.uploader.name || file.uploader.email}</span>
-                    <span>•</span>
                     <span>{new Date(file.createdAt).toLocaleDateString()}</span>
                   </div>
                 </div>
               </div>
-              {/* Can add download/delete actions here later */}
             </div>
           ))}
         </div>
