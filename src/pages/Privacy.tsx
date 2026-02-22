@@ -17,7 +17,7 @@ export const Privacy = () => {
       <main className="max-w-3xl mx-auto px-6 py-16">
         <h1 className="text-3xl font-bold text-text mb-8">Privacy Policy</h1>
         <div className="prose prose-lg dark:prose-invert text-subtle">
-          <p className="mb-4">Last Updated: October 26, 2024</p>
+          <p className="mb-4">Last Updated: February 23, 2026</p>
 
           <h3 className="text-xl font-semibold text-text mt-8 mb-4">1. Information We Collect</h3>
           <p className="mb-4">

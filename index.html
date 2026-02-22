@@ -5,6 +5,21 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>frontend</title>
+    <script>
+      (function() {
+        try {
+          var localValue = localStorage.getItem('theme');
+          var supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+          if (localValue === 'dark' || (!localValue && supportDarkMode)) {
+            document.documentElement.classList.add('dark');
+            if (!localValue) localStorage.setItem('theme', 'dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+            if (!localValue) localStorage.setItem('theme', 'light');
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

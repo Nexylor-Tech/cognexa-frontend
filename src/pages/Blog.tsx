@@ -9,26 +9,10 @@ export const Blog = () => {
       id: 1,
       title: "The Future of AI-Native Project Management",
       excerpt: "Why manual task entry is becoming obsolete in the enterprise.",
-      date: "Oct 12, 2024",
+      date: "February 20, 2026",
       readTime: "5 min read",
-      category: "Thought Leadership"
+      category: "Management"
     },
-    {
-      id: 2,
-      title: "Conflict-Aware Scheduling: A Technical Deep Dive",
-      excerpt: "How we built the engine that prevents calendar clashes before they happen.",
-      date: "Sep 28, 2024",
-      readTime: "8 min read",
-      category: "Engineering"
-    },
-    {
-      id: 3,
-      title: "From Transcript to Task: The parsing pipeline",
-      excerpt: "A look at how Cognexa extracts structured data from unstructured meetings.",
-      date: "Sep 15, 2024",
-      readTime: "6 min read",
-      category: "Product"
-    }
   ];
 
   return (
@@ -74,7 +58,7 @@ export const Blog = () => {
 
       <footer className="bg-surface border-t border-overlay py-12 px-6 mt-20">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="text-sm text-subtle">© 2024 Cognexa Inc.</div>
+          <div className="text-sm text-subtle">© 2026 Cognexa Inc.</div>
           <div className="flex gap-6 text-sm font-medium text-subtle">
             <a href="#" className="hover:text-text">Home</a>
             <a href="#terms" className="hover:text-text">Terms</a>

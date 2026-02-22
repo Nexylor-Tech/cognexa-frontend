@@ -158,7 +158,7 @@ export const Landing: React.FC<LandingProps> = ({ onSignInClick }) => {
             </div>
 
             {/* Top Left: Sticky Note */}
-            <div className="absolute top-10 left-1/4 w-56 bg-[#4a4528] p-4 rounded-[5px] shadow-lg transform -rotate-6 hover:rotate-0 transition-transform duration-500 z-0">
+            <div className="absolute top-10 left-1/4 w-56 bg-surface p-4 rounded-[5px] shadow-lg transform -rotate-6 hover:rotate-0 transition-transform duration-500 z-0">
               <div className="w-3 h-3 rounded-full bg-love mx-auto mb-2 opacity-50"></div>
               <p className="handwritten font-serif text-sm leading-relaxed text-text/80 italic">
                 "Take notes to keep track of crucial details, and accomplish more tasks with ease."
